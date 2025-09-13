@@ -1,19 +1,32 @@
 import { useState, useEffect, useRef } from 'react';
 
+interface Player {
+  name: string;
+  hp: number;
+  maxHp: number;
+}
+
+interface MatchResult {
+  round: number;
+  play: number;
+  winner: string | null;
+  points: number;
+}
+
 const VEXBattleSystem = () => {
   const [currentPage, setCurrentPage] = useState('home');
   const [currentRound, setCurrentRound] = useState(1);
   const [currentPlay, setCurrentPlay] = useState(1);
-  const [player1, setPlayer1] = useState({ name: 'Robot Alpha', hp: 100, maxHp: 100 });
-  const [player2, setPlayer2] = useState({ name: 'Robot Beta', hp: 100, maxHp: 100 });
+  const [player1, setPlayer1] = useState<Player>({ name: 'Robot Alpha', hp: 100, maxHp: 100 });
+  const [player2, setPlayer2] = useState<Player>({ name: 'Robot Beta', hp: 100, maxHp: 100 });
   const [playTimer, setPlayTimer] = useState(120); // 2 minutes
   const [flipTimer, setFlipTimer] = useState(0);
   const [playTimerActive, setPlayTimerActive] = useState(false);
   const [flipTimerActive, setFlipTimerActive] = useState(false);
-  const [flippedPlayer, setFlippedPlayer] = useState(null);
-  const [winner, setWinner] = useState(null);
+  const [flippedPlayer, setFlippedPlayer] = useState<number | null>(null);
+  const [winner, setWinner] = useState<string | null>(null);
   const [overallScores, setOverallScores] = useState({ player1: 0, player2: 0 });
-  const [matchResults, setMatchResults] = useState([]);
+  const [matchResults, setMatchResults] = useState<MatchResult[]>([]);
   const [showSetup, setShowSetup] = useState(false);
   
   // Setup form states
@@ -22,8 +35,8 @@ const VEXBattleSystem = () => {
   const [setupPlayer1HP, setSetupPlayer1HP] = useState(100);
   const [setupPlayer2HP, setSetupPlayer2HP] = useState(100);
   
-  const playTimerRef = useRef(null);
-  const flipTimerRef = useRef(null);
+  const playTimerRef = useRef<number | null>(null);
+  const flipTimerRef = useRef<number | null>(null);
 
   // Timer effects
   useEffect(() => {
@@ -42,7 +55,11 @@ const VEXBattleSystem = () => {
         setWinner('Draw');
       }
     }
-    return () => clearTimeout(playTimerRef.current);
+    return () => {
+      if (playTimerRef.current) {
+        clearTimeout(playTimerRef.current);
+      }
+    };
   }, [playTimer, playTimerActive, player1.hp, player2.hp]);
 
   useEffect(() => {
@@ -55,7 +72,11 @@ const VEXBattleSystem = () => {
       // Flip timer expired - player loses
       setWinner(flippedPlayer === 1 ? player2.name : player1.name);
     }
-    return () => clearTimeout(flipTimerRef.current);
+    return () => {
+      if (flipTimerRef.current) {
+        clearTimeout(flipTimerRef.current);
+      }
+    };
   }, [flipTimer, flipTimerActive, flippedPlayer, player1.name, player2.name]);
 
   // Check for HP-based wins
@@ -71,13 +92,13 @@ const VEXBattleSystem = () => {
     }
   }, [player1.hp, player2.hp, player1.name, player2.name]);
 
-  const formatTime = (seconds) => {
+  const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const adjustHP = (player, amount) => {
+  const adjustHP = (player: number, amount: number): void => {
     if (winner) return; // Don't allow changes after winner is declared
     
     if (player === 1) {
@@ -87,20 +108,20 @@ const VEXBattleSystem = () => {
     }
   };
 
-  const startFlipTimer = (player) => {
+  const startFlipTimer = (player: number): void => {
     if (winner) return;
     setFlippedPlayer(player);
     setFlipTimer(10); // 10 second flip recovery time
     setFlipTimerActive(true);
   };
 
-  const stopFlipTimer = () => {
+  const stopFlipTimer = (): void => {
     setFlipTimerActive(false);
     setFlippedPlayer(null);
     setFlipTimer(0);
   };
 
-  const resetMatch = () => {
+  const resetMatch = (): void => {
     setPlayer1(prev => ({ ...prev, hp: prev.maxHp }));
     setPlayer2(prev => ({ ...prev, hp: prev.maxHp }));
     setPlayTimer(120);
@@ -111,7 +132,7 @@ const VEXBattleSystem = () => {
     setWinner(null);
   };
 
-  const applySetup = () => {
+  const applySetup = (): void => {
     setPlayer1({
       name: setupPlayer1Name,
       hp: setupPlayer1HP,
@@ -126,7 +147,7 @@ const VEXBattleSystem = () => {
     resetMatch();
   };
 
-  const nextMatch = () => {
+  const nextMatch = (): void => {
     // Record the match result
     const points = currentRound === 3 ? 6 : 3; // Double points in final round
     let newScores = { ...overallScores };
