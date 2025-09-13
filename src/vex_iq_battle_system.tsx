@@ -108,6 +108,16 @@ const VEXBattleSystem = () => {
     }
   };
 
+  const applyOutOfFieldPenalty = (player: number): void => {
+    if (winner) return; // Don't allow changes after winner is declared
+    
+    if (player === 1) {
+      setPlayer1(prev => ({ ...prev, hp: Math.max(0, prev.hp - 2) }));
+    } else {
+      setPlayer2(prev => ({ ...prev, hp: Math.max(0, prev.hp - 2) }));
+    }
+  };
+
   const startFlipTimer = (player: number): void => {
     if (winner) return;
     setFlippedPlayer(player);
@@ -199,7 +209,14 @@ const VEXBattleSystem = () => {
               <input
                 type="number"
                 value={setupPlayer1HP}
-                onChange={(e) => setSetupPlayer1HP(Math.max(1, parseInt(e.target.value) || 100))}
+                onChange={(e) => {
+                  const value = parseInt(e.target.value);
+                  if (!isNaN(value) && value >= 1) {
+                    setSetupPlayer1HP(value);
+                  } else if (e.target.value === '') {
+                    setSetupPlayer1HP(100);
+                  }
+                }}
                 min="1"
                 max="200"
                 className="w-full p-3 border border-neutral-300 rounded-lg focus:border-neutral-500 focus:outline-none bg-white text-neutral-800"
@@ -218,7 +235,14 @@ const VEXBattleSystem = () => {
               <input
                 type="number"
                 value={setupPlayer2HP}
-                onChange={(e) => setSetupPlayer2HP(Math.max(1, parseInt(e.target.value) || 100))}
+                onChange={(e) => {
+                  const value = parseInt(e.target.value);
+                  if (!isNaN(value) && value >= 1) {
+                    setSetupPlayer2HP(value);
+                  } else if (e.target.value === '') {
+                    setSetupPlayer2HP(100);
+                  }
+                }}
                 min="1"
                 max="200"
                 className="w-full p-3 border border-neutral-300 rounded-lg focus:border-neutral-500 focus:outline-none bg-white text-neutral-800"
@@ -251,13 +275,13 @@ const VEXBattleSystem = () => {
         <div className="text-center mb-12">
           <div className="text-sm font-medium text-neutral-600 mb-4 tracking-wide">MINDX TECHNOLOGY SCHOOL</div>
           <h1 className="text-7xl font-light mb-6 text-neutral-900 tracking-tight">
-            THUYẾT TRÌNH
+            VEX IQ
           </h1>
           <h2 className="text-6xl font-light mb-8 text-neutral-700 tracking-tight">
-            CUỐI KHÓA
+            BATTLE TOURNAMENT
           </h2>
           <div className="bg-neutral-900 text-white px-8 py-4 rounded-sm text-xl font-medium inline-block mb-8 tracking-wide">
-            TK-ROB-PREB2B
+            PXL-ROB-SEMIA04/05
           </div>
         </div>
 
@@ -271,24 +295,22 @@ const VEXBattleSystem = () => {
             <div className="space-y-3 text-base">
               <div className="flex items-center gap-4">
                 <div className="w-2 h-2 bg-neutral-400 rounded-full"></div>
-                <span className="text-neutral-700">Date: August 16th, 2025</span>
+                <span className="text-neutral-700">Date: November 19th, 2025</span>
               </div>
               <div className="flex items-center gap-4">
                 <div className="w-2 h-2 bg-neutral-400 rounded-full"></div>
-                <span className="text-neutral-700">Presented by: Class PREB2B</span>
+                <span className="text-neutral-700">Presented by: Class SEMIA04/05</span>
               </div>
             </div>
           </div>
           
           <div className="relative">
-            <div className="bg-white border border-neutral-200 rounded-lg p-8 h-80 flex items-center justify-center">
-              <div className="text-center">
-                <div className="w-24 h-24 bg-neutral-100 rounded-full flex items-center justify-center mb-4 mx-auto border border-neutral-200">
-                  <span className="text-3xl text-neutral-400">🤖</span>
-                </div>
-                <p className="text-neutral-500 font-medium">Tournament Images</p>
-                <p className="text-sm text-neutral-400 mt-1">Replace with actual photos</p>
-              </div>
+            <div className="bg-white border border-neutral-200 rounded-lg overflow-hidden h-80">
+              <img 
+                src="/mindx.jpg" 
+                alt="VEX IQ Battle Tournament" 
+                className="w-full h-full object-cover"
+              />
             </div>
           </div>
         </div>
@@ -361,7 +383,7 @@ const VEXBattleSystem = () => {
 
           <div className="bg-white border border-neutral-200 rounded-lg p-8">
             <h2 className="text-2xl font-medium mb-6 text-neutral-900 flex items-center gap-3">
-              <span className="text-xl">❌</span> Loss Conditions
+              <span className="text-xl">❌</span> Loss Conditions & Penalties
             </h2>
             <div className="space-y-4">
               <div className="flex items-center gap-4 p-4 bg-neutral-50 rounded-lg border border-neutral-100">
@@ -373,12 +395,8 @@ const VEXBattleSystem = () => {
                 <div className="text-neutral-700">Robot gets <span className="font-medium text-neutral-900">flipped and cannot recover</span></div>
               </div>
               <div className="flex items-center gap-4 p-4 bg-neutral-50 rounded-lg border border-neutral-100">
-                <div className="w-8 h-8 bg-neutral-600 rounded-full flex items-center justify-center text-xs font-medium text-white">-3</div>
-                <div className="text-neutral-700">Major penalty = <span className="font-medium text-neutral-900">-3 HP</span></div>
-              </div>
-              <div className="flex items-center gap-4 p-4 bg-neutral-50 rounded-lg border border-neutral-100">
-                <div className="w-8 h-8 bg-neutral-500 rounded-full flex items-center justify-center text-xs font-medium text-white">-1</div>
-                <div className="text-neutral-700">Minor penalty = <span className="font-medium text-neutral-900">-1 HP</span></div>
+                <div className="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center text-xs font-medium text-white">-2</div>
+                <div className="text-neutral-700">Out of field penalty = <span className="font-medium text-neutral-900">-2 HP</span></div>
               </div>
             </div>
           </div>
@@ -473,9 +491,10 @@ const VEXBattleSystem = () => {
             </div>
 
             {/* HP Controls */}
-            <div className="grid grid-cols-2 gap-2 mb-4">
+            <div className="grid grid-cols-3 gap-2 mb-4">
               <button onClick={() => adjustHP(1, -3)} className="bg-neutral-600 hover:bg-neutral-700 text-white py-2 rounded font-medium text-sm">-3 HP</button>
               <button onClick={() => adjustHP(1, -1)} className="bg-neutral-400 hover:bg-neutral-500 text-white py-2 rounded font-medium text-sm">-1 HP</button>
+              <button onClick={() => applyOutOfFieldPenalty(1)} className="bg-red-600 hover:bg-red-700 text-white py-2 rounded font-medium text-sm">Out of Field</button>
             </div>
 
             {/* Action Buttons */}
@@ -583,9 +602,10 @@ const VEXBattleSystem = () => {
             </div>
 
             {/* HP Controls */}
-            <div className="grid grid-cols-2 gap-2 mb-4">
+            <div className="grid grid-cols-3 gap-2 mb-4">
               <button onClick={() => adjustHP(2, -3)} className="bg-neutral-600 hover:bg-neutral-700 text-white py-2 rounded font-medium text-sm">-3 HP</button>
               <button onClick={() => adjustHP(2, -1)} className="bg-neutral-400 hover:bg-neutral-500 text-white py-2 rounded font-medium text-sm">-1 HP</button>
+              <button onClick={() => applyOutOfFieldPenalty(2)} className="bg-red-600 hover:bg-red-700 text-white py-2 rounded font-medium text-sm">Out of Field</button>
             </div>
 
             {/* Action Buttons */}
