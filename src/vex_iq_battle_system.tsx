@@ -295,7 +295,7 @@ const VEXBattleSystem = () => {
             <div className="space-y-3 text-base">
               <div className="flex items-center gap-4">
                 <div className="w-2 h-2 bg-neutral-400 rounded-full"></div>
-                <span className="text-neutral-700">Date: November 19th, 2025</span>
+                <span className="text-neutral-700">Date: November 15th, 2025</span>
               </div>
               <div className="flex items-center gap-4">
                 <div className="w-2 h-2 bg-neutral-400 rounded-full"></div>
