@@ -121,7 +121,7 @@ const VEXBattleSystem = () => {
   const startFlipTimer = (player: number): void => {
     if (winner) return;
     setFlippedPlayer(player);
-    setFlipTimer(10); // 10 second flip recovery time
+    setFlipTimer(5); // 10 second flip recovery time
     setFlipTimerActive(true);
   };
 
